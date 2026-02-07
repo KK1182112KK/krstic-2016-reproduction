@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the original paper."
+title: "Predictor-Based Feedback for Nonlinear Systems — Reproduction"
+type: software
+authors:
+  - family-names: "Kotari"
+    given-names: "Kenshin"
+license: MIT
+repository-code: "https://github.com/YOUR_USERNAME/bekiaris-liberis-krstic-2016"
+preferred-citation:
+  type: article
+  authors:
+    - family-names: "Bekiaris-Liberis"
+      given-names: "Nikolaos"
+    - family-names: "Krstic"
+      given-names: "Miroslav"
+  title: "Stability of predictor-based feedback for nonlinear systems with distributed input delay"
+  journal: "Automatica"
+  year: 2016
+  volume: 70
+  start: 195
+  end: 203
+  doi: "10.1016/j.automatica.2016.04.010"

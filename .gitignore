@@ -1,0 +1,39 @@
+# MATLAB
+*.asv
+*.m~
+*.mex*
+slprj/
+
+# Python
+__pycache__/
+.pytest_cache/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# LaTeX
+*.aux
+*.log
+*.out
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.toc
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Project-specific: keep generated figures but ignore zip
+*.zip
