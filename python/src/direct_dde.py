@@ -137,7 +137,10 @@ def simulate(D: float = 1.0, sample_dt: float = 0.01, t_end: float = 20.0,
         U[k] = -Z[k, 0]-2*Z[k, 1] if compensated else -X[k, 0]-2*X[k, 1]
         if not np.isfinite(np.r_[Z[k], U[k]]).all():
             raise FloatingPointError(f'Nonfinite controller at t={t[k]}; no clipping applied.')
-        Ud[k] = held_value(t[k]-D, t[:k+1], U[:k+1], t[k], history_value)
+        # Compare physical timestamps to delayed switch timestamps directly.
+        # (t_j + D) - D can round below t_j, incorrectly choosing U[j-1].
+        active = np.searchsorted(t[:k+1] + D, t[k], side='right') - 1
+        Ud[k] = history_value if active < 0 else U[active]
         if k == n:
             break
         # Delayed commands can switch inside the step when D/dt is non-integer.

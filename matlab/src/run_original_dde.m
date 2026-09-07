@@ -26,7 +26,10 @@ function [t,X,U,Z,info] = run_original_dde(D,dt,t_end,X0,history_value,method)
         % U(k) has NOT been written when this predictor is computed.
         Z(k,:)=history_predictor(t(k),X(k,:),D,t(1:k-1),U(1:k-1),history_value);
         U(k)=-Z(k,1)-2*Z(k,2);
-        Ud(k)=held(t(k)-D,t(1:k),U(1:k),history_value);
+        % Compare arrival timestamps directly; (t_j+D)-D may round below t_j.
+        % No tolerance is added: a command must never be reported early.
+        active=find(t(1:k)+D<=t(k),1,'last');
+        if isempty(active), Ud(k)=history_value; else, Ud(k)=U(active); end
         if any(~isfinite([Z(k,:),U(k)])), error('Nonfinite controller; no clipping.'); end
         if k==n+1, break; end
         switches=t(1:k)+D;
