@@ -1,10 +1,10 @@
 # Predictor-Based Feedback for Nonlinear Systems with Input Delay
 ### Reproduction of Bekiaris-Liberis & Krstic (Automatica, 2016)
 
-[![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=YOUR_USERNAME/bekiaris-liberis-krstic-2016)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/YOUR_USERNAME/bekiaris-liberis-krstic-2016/blob/main/python/notebook.ipynb)
-[![MATLAB Tests](https://github.com/YOUR_USERNAME/bekiaris-liberis-krstic-2016/actions/workflows/matlab-ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/bekiaris-liberis-krstic-2016/actions/workflows/matlab-ci.yml)
-[![Python Tests](https://github.com/YOUR_USERNAME/bekiaris-liberis-krstic-2016/actions/workflows/python-ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/bekiaris-liberis-krstic-2016/actions/workflows/python-ci.yml)
+[![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=KK1182112KK/krstic-2016-reproduction)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/KK1182112KK/krstic-2016-reproduction/blob/master/python/notebook.ipynb)
+[![MATLAB Tests](https://github.com/KK1182112KK/krstic-2016-reproduction/actions/workflows/matlab-ci.yml/badge.svg)](https://github.com/KK1182112KK/krstic-2016-reproduction/actions/workflows/matlab-ci.yml)
+[![Python Tests](https://github.com/KK1182112KK/krstic-2016-reproduction/actions/workflows/python-ci.yml/badge.svg)](https://github.com/KK1182112KK/krstic-2016-reproduction/actions/workflows/python-ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ## Overview
@@ -14,6 +14,14 @@ This repository reproduces **Example 1** from:
 > N. Bekiaris-Liberis and M. Krstic, "Stability of predictor-based feedback for nonlinear systems with distributed input delay," *Automatica*, vol. 70, pp. 195–203, 2016.
 
 The paper addresses stabilization of nonlinear systems where the control input reaches the plant only after a delay *D*. A predictor-based feedback framework estimates the plant state *D* seconds into the future, enabling the controller to compensate for the delay. Two independent numerical methods are implemented and cross-validated to **6-digit agreement**.
+
+## Reproducibility Audit
+
+A separate technical note documents independent checks of the printed equations, theorem assumptions, simulation initialization, and related 2012 state-dependent state-delay examples:
+
+**[`docs/REPRODUCIBILITY_AUDIT.md`](docs/REPRODUCIBILITY_AUDIT.md)**
+
+The audit deliberately distinguishes reproducibility/reporting discrepancies from claims about mathematical validity or research misconduct.
 
 ## Key Results
 
@@ -87,6 +95,7 @@ Or click the **Open In Colab** badge above.
 │   ├── src/                   # Python implementation
 │   └── tests/                 # pytest suite
 ├── docs/
+│   ├── REPRODUCIBILITY_AUDIT.md # Independent audit notes
 │   ├── report.tex             # LaTeX report
 │   ├── SPEC.md                # Paper specification
 │   └── METHODS.md             # Numerical methods notes
@@ -113,7 +122,7 @@ See [`docs/report.pdf`](docs/report.pdf) for the full technical report including
   year    = {2016},
   volume  = {70},
   pages   = {195--203},
-  doi     = {10.1016/j.automatica.2016.04.010}
+  doi     = {10.1016/j.automatica.2016.04.011}
 }
 ```
 
