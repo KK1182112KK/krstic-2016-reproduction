@@ -1,0 +1,50 @@
+{
+  "paper_doi": "10.1016/j.automatica.2016.04.011",
+  "example": 1,
+  "physical_equations": "28-29",
+  "controller_equations": "32-34",
+  "D": 1.0,
+  "X0": [1.0, 1.0],
+  "negative_time_input": 0.0,
+  "t_end": 20.0,
+  "controller": "sampled, zero-order hold; not exact continuous-time",
+  "plant": "RK4 original physical RHS, split at delayed input switches",
+  "predictor": "reconstructed exact affine flow for the actual ZOH history",
+  "reference": "independent postprocessing only, never used by controller",
+  "python": "3.13.5",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "runs": [
+    {
+      "sample_dt": 0.02,
+      "final_X": [-0.05990061717585353, 0.04573323826223925],
+      "final_X_norm": 0.07536320733619889,
+      "max_abs_U": 9.873127313836182,
+      "max_Z_vs_ideal_reference": 0.01751684771073858,
+      "max_identity_integral_defect_per_time": 1.0818435767675637e-05,
+      "max_RK4_vs_exact_held_plant": 1.9861561950662576e-08,
+      "max_X_change_from_coarser": null
+    },
+    {
+      "sample_dt": 0.01,
+      "final_X": [-0.05819743913296853, 0.04516151910039786],
+      "final_X_norm": 0.0736648133717257,
+      "max_abs_U": 9.873127313836182,
+      "max_Z_vs_ideal_reference": 0.008723411654270485,
+      "max_identity_integral_defect_per_time": 2.705478628664028e-06,
+      "max_RK4_vs_exact_held_plant": 1.2516698788545e-09,
+      "max_X_change_from_coarser": 0.008854112707613382
+    },
+    {
+      "sample_dt": 0.005,
+      "final_X": [-0.05734206431644801, 0.044875741123496175],
+      "final_X_norm": 0.07281445242158116,
+      "max_abs_U": 9.873127313836182,
+      "max_Z_vs_ideal_reference": 0.004353022537990414,
+      "max_identity_integral_defect_per_time": 6.764771734069124e-07,
+      "max_RK4_vs_exact_held_plant": 7.855471828577265e-11,
+      "max_X_change_from_coarser": 0.004400860088718428
+    }
+  ],
+  "matlab_execution": "not executed in the local Python environment"
+}

@@ -1,0 +1,8 @@
+Command: python -m pytest python/tests/test_direct_dde.py python/tests/test_direct_state_delay.py -q
+...........................                                              [100%]
+27 passed in 0.87s
+
+Python 3.13.5; NumPy 2.3.5; SciPy 1.17.0; pytest 9.0.2.
+The updated notebook also executed successfully from top to bottom locally.
+This log covers the NEW Python tests, not unchanged legacy tests or MATLAB.
+MATLAB was not executed. Existing CI workflows target main, not this PR's master base.

@@ -1,0 +1,100 @@
+# Direct original-plant simulation: scope and numerical contract
+
+## What changed
+
+The former default MATLAB `closedloop_ode` and Python `run_pde_simulation`
+propagated X together with an upwind spatial discretization of an input
+transport PDE. This is a legitimate approximate realization, not evidence of
+fabrication and not merely an integration of the target Z system. It does,
+however, replace an exact delay evaluation by a transport-grid approximation.
+The former MATLAB `run_direct_closedloop` also froze current and delayed
+controls over each RK4 step and extrapolated input history. Its complete
+feedback simulation should not have been described as a fourth-order
+continuous-feedback method solely because its inner plant step was RK4.
+
+Default entry points now use `python/src/direct_dde.py` and
+`matlab/src/run_original_dde.m`. The old named PDE functions are retained.
+The backward-compatible `run_direct_closedloop` delegates to the new solver.
+
+## 2016 Example 1
+
+Only physical X1 and X2 are time-stepped, using literal Eqs. (28)-(29).
+At t_k, reconstruct Eqs. (33)-(34) from X(t_k) and the previously issued
+commands. Apply U_k=-Z1_k-2*Z2_k on [t_k,t_{k+1}). Store that actual command.
+The negative-time input is an explicitly specified constant (zero by default).
+There is a possible startup jump at zero; it is not smeared into negative time.
+The controller-startup mismatch is not presented as satisfying a continuous
+feedback-compatible initial-history theorem.
+
+The delay D is used as given, including non-integer D/sample_dt. Split each
+plant interval wherever a stored input switch shifted by D occurs. Thus the
+current and delayed inputs are genuinely constant on each resulting interval.
+RK4 calls the original RHS. An optional `exact-held` mode integrates that same
+original RHS analytically and supplies an independent plant-step check. It does
+not reconstruct X from a target trajectory.
+
+The predictor solves p1'=2*p2, p2'=(p2+u)/(1+u^2) over the actual held-history
+bins. For bin width h and a=1/(1+u^2), the exact affine update is
+p2_next=p2+(p2+u)*expm1(a*h) and
+p1_next=p1+2*((p2+u)*expm1(a*h)/a-u*h).
+A vectorized integrating-factor composition evaluates the same updates.
+
+This is **sampled-data feedback**, not the exact continuous-time control law.
+Do not combine the RK4 plant-order claim with a fourth-order claim for the full
+closed loop. Sample-period convergence is tested independently. Unsupported
+claims of machine precision, guaranteed stabilization for all sample periods,
+or six-digit agreement have been removed from the default-run README.
+
+## 2012 examples
+
+The new Python code steps the original two physical states using explicit Heun.
+At both RHS stages it recomputes a spatial predictor from the current/trial
+state and the available X2/v history. Between accepted nodes, past X2/v is
+linearly interpolated. For a within-step delay query, the second Heun stage
+uses the linear segment joining the accepted state and its provisional Euler
+stage. This is a stated numerical approximation, not measured future data.
+The predictor uses adaptive RK45; tolerances are recorded in each output.
+No independently propagated predictor/target state drives the physical plant.
+
+For Example 2, the physical delay is always D(s)=0.3*sin(15*s)^2. `factor=1`
+implements the printed denominator literally; `factor=2` implements the
+chain-rule derivative in the general design. These are separate experiments.
+The default is the printed version. A factor-1 predictor is not assumed to
+satisfy P(t)=s(t+D(P(t))). For this reason the code labels t+D(P) as a
+`sigma_candidate`, not an independently verified inverse clock.
+
+For the cooling example, the history is exactly the requested .2 or .6.
+The hypothesized setpoint .4 is recorded, not attributed to the parameter list.
+The code does not impose unmentioned positivity or actuator constraints.
+
+Every predictor evaluation checks its denominator/domain. A check failure is
+reported instead of clipped or regularized. Sampled endpoint denominator minima
+are diagnostics, not certified minima on every predictor interval. No RoA,
+robustness, or global-validity certificate is inferred from these runs.
+
+## Tests and archived evidence
+
+- Analytic zero-input pre-arrival physical trajectory; startup right/left values.
+- Known constant/piecewise-constant predictor versus independent spatial IVPs.
+- Non-integer delays; RK4 versus exact original held-plant flow.
+- Prefix independence from the eventual simulation horizon (no anticipation).
+- 2016 refinement against an ideal Z reference computed only after the run.
+- 2012 initial predictor clock identity and target-error refinement as diagnostics.
+- Printed versus corrected specialization remains explicit in the code.
+
+The local new test suite has 27 passing tests. It does not certify unchanged
+legacy tests or MATLAB execution. CI must be checked separately.
+Full trajectory CSVs are generated by the runners. Compact summaries and
+provenance are committed; paper figures and author simulation code are not.
+
+## Numerical software references
+
+SciPy's `solve_ivp` is an ODE/IVP solver, not a built-in DDE solver:
+https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.solve_ivp.html
+
+MATLAB's `dde23` handles constant delayed *states*:
+https://www.mathworks.com/help/matlab/ref/dde23.html
+
+The 2016 original plant plus functional input-history controller is implemented
+here through an explicit input buffer and split physical steps, not by claiming
+a direct `dde23` call implements the complete functional controller unchanged.
