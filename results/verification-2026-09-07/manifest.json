@@ -1,0 +1,38 @@
+{
+  "parent_commit": "f3836c7ed1d03411fa92f302dfdc2b2f676061f5",
+  "verification_date": "2026-09-07",
+  "project_maintainer": "Kenshin Kotari",
+  "python": "3.13.5",
+  "packages": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "matplotlib": "3.10.8",
+    "pytest": "9.0.2",
+    "nbconvert": "7.17.1",
+    "nbformat": "5.10.4",
+    "ipykernel": "7.2.0"
+  },
+  "python_tests_passed": 45,
+  "new_regression_cases": 12,
+  "baseline_regression_result": {
+    "failed": 3,
+    "passed": 9
+  },
+  "notebook_code_cells_executed": 6,
+  "matlab_local_execution": "not available; source reviewed only",
+  "github_actions": "separate from this local evidence",
+  "sha256": {
+    "python/src/direct_dde.py": "44428d8b480853f461a2a3e760fc952de4a615d7d9f8c6524e9e680c5b51575c",
+    "matlab/src/run_original_dde.m": "f522ee7b2266a20f3296ffc1909142438efa7dfec0cbe9fb156d6f54400b7f8f",
+    "python/tests/test_delay_switch_boundaries.py": "1762c26f42118eae99f87d75d633b66441acbd8dad8206c129ede73f8f8b4fba",
+    "matlab/tests/test_delay_switch_boundaries.m": "8685a00a216e16596ec2e282815e8af25c71e978a6810ee9922930182af25fc8",
+    "python/run_boundary_validation.py": "81a9a4bec7c6989f4dad59dcbf8036e848deb0a967a7c84838c601f10396b261",
+    "python/notebook.ipynb": "0052436cd17b6e3bf8a687203f07e3a8dc12d97e1d41527fcbaec6a5655094fc",
+    "state-delay-2012/direct_state_delay.py": "d3410d2769de45eb0304530e47c5afe88d8a2b51c1b8f985f1eac741861e7bde",
+    "python/src/predictor.py": "4bc90f480afffb6df26ee8c5fd13891568a992da74be178a98fa54a605b780cf",
+    "python/tests/test_direct_dde.py": "6665523210739ed3769c2581738235061df828cd55c612d332dc777c224725ed",
+    "python/tests/test_direct_state_delay.py": "b47e6af231747ff7849aa237b51e6fe8aae07d2c797d32deb4a3b4e5b233ec09",
+    "python/tests/test_predictor.py": "2cc73528d3d5a776ed5dcb2fac2f0bbd509f91d15b3b373da780ebc0bde3ad86",
+    "python/run_direct_validation.py": "d821b82e4f68617765d0ceb8b4c7f6ee2c5eb7789415d757f5fc2b9eb1dda00c"
+  }
+}

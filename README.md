@@ -1,17 +1,43 @@
 # Original-plant simulations for nonlinear delay-control papers
 
-The default simulations integrate the **original physical delayed plant**. The
-predictor is reconstructed online from the current physical state and available
-history. A reduced/target-system trajectory is **never** used to generate the
-plant state or the applied control.
+**Implementation and reproducibility project: Kenshin Kotari.**
+This repository records numerical implementations, regression tests, and
+verification evidence. The original models, controller designs, and theorems
+belong to the authors of the papers cited below. Use [CITATION.cff](CITATION.cff)
+to cite this software separately from those papers. Development and documentation
+were AI-assisted; the archived tests identify what was actually executed.
 
-## Run the 2016 input-delay example
+The default simulations integrate the **original physical delayed plant**.
+Predictors are reconstructed online from the current physical state and available
+history. A reduced/target trajectory is never used to generate the physical
+state or applied input. An ideal reference is calculated only in postprocessing.
 
-Source: N. Bekiaris-Liberis and M. Krstic, *Stability of predictor-based feedback
-for nonlinear systems with distributed input delay*, Automatica 70 (2016),
-195-203. DOI: `10.1016/j.automatica.2016.04.011`.
+## Latest verification
 
-The existing Example 1 uses the original Eqs. (28)-(29):
+**45 Python tests passed locally**, including 12 new delayed-switch regression
+cases, and all six code cells of the updated notebook executed successfully.
+The 2016 delayed-input output had a floating-point boundary lookup error; it is
+fixed in Python and the corresponding MATLAB code. In the archived regression,
+27 incorrect output nodes became zero, while physical X, applied U, and
+reconstructed Z were bitwise unchanged relative to the parent implementation.
+This is a diagnostic-output fix, not a change to the control law.
+
+[Verification report](docs/VERIFICATION_2026_09_07.md) |
+[Regression metrics](results/verification-2026-09-07/boundary-regression.json) |
+[Test log](results/verification-2026-09-07/python-tests.log) |
+[Source/environment manifest](results/verification-2026-09-07/manifest.json)
+
+MATLAB is source-reviewed, **not locally execution-verified**. GitHub Actions
+results must be checked separately; local test logs are not CI-pass evidence.
+This branch remains a draft review artifact until the PR is merged.
+
+## 2016 input-delay example
+
+N. Bekiaris-Liberis and M. Krstic, *Stability of predictor-based feedback for
+nonlinear systems with distributed input delay*, Automatica 70 (2016), 195-203.
+DOI: `10.1016/j.automatica.2016.04.011`.
+
+The existing Example 1 uses original Eqs. (28)-(29):
 
 ```math
 \dot X_1=2X_2+U(t),\qquad
@@ -24,14 +50,13 @@ state with the eventual feedback already applied.
 
 ### Python / Colab
 
-[Open the direct-simulation notebook in Colab](https://colab.research.google.com/github/KK1182112KK/krstic-2016-reproduction/blob/reproducibility-audit-notes/python/notebook.ipynb)
-
-From a checkout, run:
+[Open the notebook in Colab](https://colab.research.google.com/github/KK1182112KK/krstic-2016-reproduction/blob/reproducibility-audit-notes/python/notebook.ipynb)
 
 ```bash
 pip install -r python/requirements.txt
+python -m pytest python/tests/ -q
 python python/run_direct_validation.py
-python -m pytest python/tests/test_direct_dde.py python/tests/test_direct_state_delay.py -q
+python python/run_boundary_validation.py
 ```
 
 ### MATLAB
@@ -39,58 +64,22 @@ python -m pytest python/tests/test_direct_dde.py python/tests/test_direct_state_
 ```matlab
 cd matlab
 run_all          % Original plant, refinement study, figures
-run_all('sim')   % Same direct simulations, without figures
-run_all('test')  % MATLAB tests
+run_all('sim')   % Direct simulations without figures
+run_all('test')  % MATLAB tests, including delayed-switch regressions
 ```
 
-**Numerical implementation:** RK4 steps the original two-dimensional physical
-RHS. U(t-D) is read from an actual timestamped input buffer. D is not rounded to
-a grid index; steps are split at delayed input switches. Each controller sample
-reconstructs Z from X and the past applied input. There is no transport PDE in
-this path.
+RK4 steps the original two-dimensional RHS. U(t-D) comes from a timestamped
+applied-input buffer; D is not rounded to a grid index. Plant intervals split
+at delayed command arrivals. There is no transport PDE on this default path.
+Reported delayed commands use arrival timestamps directly, not cancellation-
+prone `(t-D)` comparisons or a tolerance that could advance a command early.
 
-**Important:** the 2016 controller is explicitly **sampled and zero-order held**.
-This is not an exact continuous-time implementation of the theorem. The sample
-period is recorded, and the runner compares periods 0.02, 0.01, and 0.005.
-The spatial predictor is integrated exactly for this piecewise-constant input
-history, up to floating-point error. No new plant-structure assumption is added.
+**The 2016 controller is explicitly sampled and zero-order held.** This is not
+an exact continuous-time implementation of the theorem. The spatial predictor
+uses the exact affine flow for the actual held history, up to floating-point
+error. Refine the controller period independently of the plant integrator.
 
-## Run the 2012 state-delay examples
-
-Source: N. Bekiaris-Liberis, M. Jankovic and M. Krstic, *Compensation of
-state-dependent state delay for nonlinear systems*, Systems & Control Letters
-61 (2012), 849-856. DOI: `10.1016/j.sysconle.2012.05.002`.
-
-```bash
-# Literal printed Eq. (69)-(70) specialization: factor 1 (the default)
-python state-delay-2012/direct_state_delay.py --factor 1 --dt 0.0025
-# Chain-rule-consistent alternative, explicitly selected; plant unchanged
-python state-delay-2012/direct_state_delay.py --factor 2 --dt 0.0025
-# Cooling: use the stated history first, and label the alternative as a hypothesis
-python state-delay-2012/direct_state_delay.py --example cooling --history 0.2 --setpoint 0.4 --t-end 10
-python state-delay-2012/direct_state_delay.py --example cooling --history 0.6 --setpoint 0.4 --t-end 10
-# Both factor cases / both histories and time-step refinement
-python state-delay-2012/run_refinement.py
-```
-
-These runs use original Eqs. (63)-(64) or (67)-(68), explicit Heun in physical
-time, a causal piecewise-linear state-history representation (with a provisional
-Heun-stage extension), and a fresh adaptive spatial predictor solve at every
-RHS evaluation. No target-system state is propagated. A singular/invalid
-predictor raises an error; there is no undocumented denominator clipping,
-actuator saturation, parameter fitting, or replacement by a stable target ODE.
-The setpoint 0.4 is an explicit audit hypothesis, **not** a value supplied by the
-paper's parameter sentence. A finite successful run does not certify its RoA.
-
-## Verified results and limits
-
-The new Python tests pass locally: **27 tests**, Python 3.13.5, NumPy 2.3.5,
-SciPy 1.17.0. MATLAB code is provided but was **not executed** in this local
-Python environment. Existing CI workflows target `main`, whereas this PR targets
-`master`; no CI pass is claimed. Run the MATLAB tests explicitly before relying
-on that implementation.
-
-For the 2016 direct run (D=1, X0=[1,1], zero negative-time input, T=20):
+For D=1, X0=[1,1], zero negative-time input, T=20:
 
 | Sample period | max reconstructed Z minus independent ideal reference | final physical state norm |
 |---|---:|---:|
@@ -98,32 +87,54 @@ For the 2016 direct run (D=1, X0=[1,1], zero negative-time input, T=20):
 | 0.01 | 8.7234e-3 | 7.3665e-2 |
 | 0.005 | 4.3530e-3 | 7.2814e-2 |
 
-The reference is calculated **after** the direct physical simulation and is
-never available to its controller. These finite-horizon results replace the
-previous README's unverified six-digit-agreement / 1e-6 terminal-convergence
-claims for the default run. Refinement evidence is not an asymptotic-stability
-proof or a robustness certificate.
+These finite-horizon measurements replace earlier unsupported default-run
+claims of six-digit agreement or a terminal state norm below 1e-6. They are not
+a global-stability or robustness proof.
 
-[2016 run metadata and metrics](results/direct-dde/summary.json) |
-[2012 direct-run summary](results/state-delay-direct/summary.csv) |
-[Method and migration notes](docs/DIRECT_SIMULATION.md)
+## 2012 state-delay examples
 
-The old transport-PDE functions remain for comparison and are explicitly opt-in:
-`run_all('legacy-pde')` in MATLAB; `run_pde_simulation` in Python. They were not
-Z-only simulations: they propagated the physical plant with an approximate
-transport delay. They are no longer the default notebook/run_all path.
+N. Bekiaris-Liberis, M. Jankovic and M. Krstic, *Compensation of state-dependent
+state delay for nonlinear systems*, Systems & Control Letters 61 (2012),
+849-856. DOI: `10.1016/j.sysconle.2012.05.002`.
 
-## Audit notes
+```bash
+# Printed specialization; factor 1 remains the default.
+python state-delay-2012/direct_state_delay.py --factor 1 --dt 0.0025
+# Explicit chain-rule-consistent alternative; physical plant unchanged.
+python state-delay-2012/direct_state_delay.py --factor 2 --dt 0.0025
+# Stated history, followed by an explicitly labeled alternative.
+python state-delay-2012/direct_state_delay.py --example cooling --history 0.2 --setpoint 0.4 --t-end 10
+python state-delay-2012/direct_state_delay.py --example cooling --history 0.6 --setpoint 0.4 --t-end 10
+python state-delay-2012/run_refinement.py
+```
 
-[Combined paper audit](docs/REPRODUCIBILITY_AUDIT.md) |
-[State-delay paper audit](state-delay-2012/README.md)
+Original Eqs. (63)-(64) or (67)-(68) are stepped with explicit Heun, causal
+piecewise-linear state history (including a provisional Heun-stage extension),
+and a fresh adaptive spatial predictor at each RHS evaluation. No target state
+is propagated. A singular or invalid predictor raises an error instead of being
+clipped. The setpoint 0.4 is an audit hypothesis, not a reported parameter.
+Printed and corrected formulas, state histories, and hypotheses stay distinct.
+The 2012 solver is unchanged by the delayed-input output fix.
 
-The algebraic/reporting observations, the original theory's assumptions, and
-our numerical results are different kinds of evidence. Earlier preliminary
-peak values should not be treated as archived measurements; use the current
-scripts and generated summaries. No allegation of misconduct is made.
+## Methods, evidence, and attribution
+
+[2016 metrics](results/direct-dde/summary.json) |
+[2012 summary](results/state-delay-direct/summary.csv) |
+[Method notes](docs/DIRECT_SIMULATION.md) |
+[Combined audit](docs/REPRODUCIBILITY_AUDIT.md) |
+[State-delay audit](state-delay-2012/README.md)
+
+Earlier audit peak estimates are historical preliminary observations; use the
+archived runners and measured summaries rather than treating those estimates
+as independently archived results. Numerical runs do not identify the authors'
+actual source code or establish misconduct. Structural assumptions and a
+restricted theorem scope are not, by themselves, evidence of an invalid proof.
+
+The old transport-PDE functions remain opt-in comparisons: `run_all('legacy-pde')`
+and `run_pde_simulation`. They propagated a physical plant with an approximate
+transport delay; they were not merely Z-only simulations.
 
 ## License
 
-Original implementation code is covered by the repository's [MIT license](LICENSE).
-The cited papers and their published figures are not redistributed here.
+Implementation code is covered by the existing [MIT license](LICENSE).
+Published papers and their figures are not redistributed in this repository.
