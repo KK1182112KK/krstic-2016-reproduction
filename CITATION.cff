@@ -1,23 +1,39 @@
 cff-version: 1.2.0
-message: "If you use this software, please cite the original paper."
-title: "Predictor-Based Feedback for Nonlinear Systems — Reproduction"
+message: "Please cite this software for the implementation and reproducibility audit, and cite the listed papers for the original control theory."
+title: "Original-plant delay simulations and reproducibility audit"
 type: software
 authors:
   - family-names: "Kotari"
     given-names: "Kenshin"
 license: MIT
-repository-code: "https://github.com/YOUR_USERNAME/bekiaris-liberis-krstic-2016"
-preferred-citation:
-  type: article
-  authors:
-    - family-names: "Bekiaris-Liberis"
-      given-names: "Nikolaos"
-    - family-names: "Krstic"
-      given-names: "Miroslav"
-  title: "Stability of predictor-based feedback for nonlinear systems with distributed input delay"
-  journal: "Automatica"
-  year: 2016
-  volume: 70
-  start: 195
-  end: 203
-  doi: "10.1016/j.automatica.2016.04.010"
+repository-code: "https://github.com/KK1182112KK/krstic-2016-reproduction"
+abstract: "Independent numerical implementations, regression tests, and reproducibility notes for published nonlinear input-delay and state-delay control examples."
+references:
+  - type: article
+    authors:
+      - family-names: "Bekiaris-Liberis"
+        given-names: "Nikolaos"
+      - family-names: "Krstic"
+        given-names: "Miroslav"
+    title: "Stability of predictor-based feedback for nonlinear systems with distributed input delay"
+    journal: "Automatica"
+    year: "2016"
+    volume: "70"
+    start: "195"
+    end: "203"
+    doi: "10.1016/j.automatica.2016.04.011"
+  - type: article
+    authors:
+      - family-names: "Bekiaris-Liberis"
+        given-names: "Nikolaos"
+      - family-names: "Jankovic"
+        given-names: "Mrdjan"
+      - family-names: "Krstic"
+        given-names: "Miroslav"
+    title: "Compensation of state-dependent state delay for nonlinear systems"
+    journal: "Systems & Control Letters"
+    year: "2012"
+    volume: "61"
+    start: "849"
+    end: "856"
+    doi: "10.1016/j.sysconle.2012.05.002"

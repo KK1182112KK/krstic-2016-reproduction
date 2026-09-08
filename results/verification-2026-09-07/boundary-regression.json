@@ -1,0 +1,26 @@
+{
+  "parameters": {
+    "D": 1.0,
+    "sample_dt": 0.01,
+    "t_end": 3.0,
+    "X0": [
+      1.0,
+      1.0
+    ],
+    "negative_time_input": 0.0
+  },
+  "legacy_lookup_mismatched_nodes": 27,
+  "fixed_lookup_mismatched_nodes": 0,
+  "max_legacy_output_error": 0.03967720350334325,
+  "python": "3.13.5",
+  "numpy": "2.3.5",
+  "source_sha256": "44428d8b480853f461a2a3e760fc952de4a615d7d9f8c6524e9e680c5b51575c",
+  "baseline_trajectory_comparison": {
+    "t": true,
+    "X": true,
+    "U": true,
+    "Z": true
+  },
+  "scope": "Finite numerical regression of reported delayed input, not a stability proof.",
+  "baseline_source_sha256": "1d463b882dd4f3594d28fed80e58451d430db53633b2b6b9bd1eb88fd06b1dca"
+}

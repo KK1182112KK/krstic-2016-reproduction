@@ -1,0 +1,12 @@
+{
+  "paper_doi": "10.1016/j.sysconle.2012.05.002",
+  "python": "3.13.5",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "limitations": [
+    "Own original-DDE computations; no author simulation code available.",
+    "Setpoint .4 is an explicit audit hypothesis, not a documented parameter.",
+    "No automatic fit to published plots; no certified RoA or robustness proof.",
+    "Endpoint denominator minima are sampled diagnostics, not certified infima."
+  ]
+}
