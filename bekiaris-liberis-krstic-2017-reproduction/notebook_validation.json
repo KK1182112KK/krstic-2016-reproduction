@@ -1,0 +1,14 @@
+{
+  "nbformat_valid": true,
+  "all_code_cells_compile": true,
+  "code_cells": 8,
+  "embedded_materialization_executed": true,
+  "embedded_test_suite_executed": true,
+  "small_original_plant_smoke_case_executed": true,
+  "full_numerical_cells_via_notebook_executed": false,
+  "full_numerical_scripts_executed_separately": true,
+  "installation_cell_executed": false,
+  "google_colab_service_executed": false,
+  "google_drive_cell_executed": false,
+  "notebook_sha256": "637f8aa600b9bbf542495901cee8ef762a034129f2ff46401218f60ecf5650d9"
+}
