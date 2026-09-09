@@ -69,8 +69,8 @@ cd ..
 cd bekiaris-liberis-krstic-2017-reproduction
 pip install -r requirements.txt
 python -m pytest -q test_audit.py
-python audit.py --out regenerated-results
-# For the independent uncompensated DDE reference, run audit.py first so results/ exists:
+# Use results/ here because the independent reference/postprocessor consume these trajectories.
+python audit.py --out results
 python continuous_reference.py
 python postprocess.py --results results
 cd ..
