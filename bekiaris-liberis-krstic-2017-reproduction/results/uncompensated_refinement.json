@@ -1,0 +1,9 @@
+[
+  {"case":"uncompensated_h0.01","final_norm":13.567966326715814,"max_component_error_to_continuous":22.91105436917306},
+  {"case":"uncompensated_h0.005","final_norm":3.3413055943095644,"max_component_error_to_continuous":11.443667619992864},
+  {"case":"uncompensated_h0.0025","final_norm":7.666859963836637,"max_component_error_to_continuous":12.263658470861257},
+  {"case":"uncompensated_h0.00125","final_norm":9.552811518331305,"max_component_error_to_continuous":6.195963355662656},
+  {"case":"uncompensated_h0.000625","final_norm":12.906813927779618,"max_component_error_to_continuous":3.261547140696866},
+  {"case":"uncompensated_h0.0003125","final_norm":14.573323739535478,"max_component_error_to_continuous":1.846582700876085},
+  {"case":"uncompensated_h0.00015625","final_norm":15.363833701050783,"max_component_error_to_continuous":0.9589918988843493}
+]
