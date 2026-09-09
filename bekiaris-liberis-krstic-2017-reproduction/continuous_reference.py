@@ -17,6 +17,7 @@ def simulate(T=15.,rtol=1e-10):
  for a in np.arange(0,T,.5):
   b=min(T,a+.5)
   def rhs(t,x):
+   # Left limit only for delayed forcing at each segment's final endpoint.
    s=min(t,b-1e-12)
    w=0. if s<.5 else nominal(s-.5,state(s-.5))[0]
    v=0. if s<1. else nominal(s-1.,state(s-1.))[1]
@@ -27,7 +28,7 @@ def simulate(T=15.,rtol=1e-10):
  ts=np.linspace(0,T,15001);xs=np.array([state(t) for t in ts])
  return ts,xs
 if __name__=='__main__':
- out=Path('results');out.mkdir(exist_ok=True);res=[]
+ out=Path('results');res=[]
  for tol in [1e-8,1e-10,1e-12]:
   t,x=simulate(rtol=tol);np.savetxt(out/f'uncompensated_continuous_tol{tol}.csv',np.column_stack([t,x]),delimiter=',',header='t,X1,X2,X3',comments='')
   m={'rtol':tol,'final_state':x[-1].tolist(),'final_norm':float(np.linalg.norm(x[-1]))};res.append(m);print(m,flush=True)
