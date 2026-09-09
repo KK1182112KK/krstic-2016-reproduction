@@ -40,6 +40,7 @@ def oscillator(h=.02,kappa=1.,delay=.7,T=6.):
  return np.column_stack([t,x,yr,yc,yp]),{'derived_error':float(abs(yr-yc).max()),'printed_error':float(abs(yr-yp).max()),'derived_Bhat':bc.tolist(),'printed_Bhat':bp.tolist()}
 
 def population(h=.05,T=10.):
+ # w is the exact exponential convolution, not a finite-memory truncation.
  t,z=rk4(lambda s,z:np.array([z[0]+z[1],-4*np.exp(-s)-z[1]]),[1.,0.],T,h)
  yr=z[:,0]+z[:,1]/2;exact=(1+2*t)*np.exp(-t)
  return np.column_stack([t,z,yr,np.exp(-t),exact]),{'y_error':float(abs(yr-np.exp(-t)).max()),'x_error':float(abs(z[:,0]-exact).max()),'final_x':float(z[-1,0])}
@@ -86,6 +87,7 @@ def folded(h=.005,T=1.):
   return integ(f,t,lo)+integ(f,hi,1.)
  def derived(t):
   lower=np.sqrt(max(0.,1-4*t))
+  # Variable change z=sqrt(1-4s) removes the integrable singularity.
   term=.5*integ(lambda z:(np.exp(-(.5-z/2))+np.exp(-(.5+z/2)))*command((1-z*z)/4),lower,1.)
   return np.exp(t)*(x0+a0*integ(lambda s:np.exp(-s)*command(s),0,t)+a1*term)
  def printed(t):
@@ -98,6 +100,8 @@ def folded(h=.005,T=1.):
  return np.column_stack([t,x,yr,yc,yp]),{'derived_error':float(abs(yr-yc).max()),'printed_error':float(abs(yr-yp).max())}
 
 def closed_loop(h=.02,T=12.,delay=.6):
+ # Scalar Eq. 5.1: x'=x+u(t-delay), K=-2 exp(delay).
+ # Exact physical and reference flows under issued zero-order-held commands.
  n=int(round(T/h));t=np.arange(n+1)*h;u=np.zeros(n+1);x=np.zeros(n+1);x[0]=1.;yr=np.zeros(n+1);ref=np.zeros(n+1);ref[0]=1.
  K=-2*np.exp(delay);bhat=np.exp(-delay)
  def lookup(q,k):
@@ -131,36 +135,47 @@ def sampled_oscillator():
   A=np.array([[0.,1.],[-k*k,0.]]);F=expm(A)
   v=np.array([(1-np.cos(k))/(k*k),np.sin(k)/k])
   bcont=np.array([-np.sin(k)/k,1+np.cos(k)])
+  # Bhat in source Eq. 8.9 = int exp(-A*s)B ds on [0,2].
   bhat=np.array([(np.cos(2*k)-1)/(k*k),np.sin(2*k)/k])
-  rows.append({'kappa_h':float(k),'continuous_rank':int(np.linalg.matrix_rank(np.column_stack([bcont,A@bcont]),tol=1e-10)),'sampled_rank':int(np.linalg.matrix_rank(np.column_stack([bhat,F@bhat]),tol=1e-10)),'held_physical_B':v.tolist(),'reduced_jump_B':bhat.tolist()})
- k=2*np.pi;A=np.array([[0.,1.],[-k*k,0.]]);x=np.array([1.,0.]);u=np.sin(np.arange(8))+1.;allrows=[]
+  rows.append({'kappa_h':float(k),'continuous_rank':int(np.linalg.matrix_rank(np.column_stack([bcont,A@bcont]),tol=1e-10)),
+    'sampled_rank':int(np.linalg.matrix_rank(np.column_stack([bhat,F@bhat]),tol=1e-10)),
+    'held_physical_B':v.tolist(),'reduced_jump_B':bhat.tolist()})
+ # An admissible nontrivial command sequence cannot move the k=2pi oscillator
+ # at integer samples. We step the original forced oscillator analytically.
+ k=2*np.pi;A=np.array([[0.,1.],[-k*k,0.]]);x=np.array([1.,0.]);u=np.sin(np.arange(8))+1.
+ allrows=[]
  for j in range(8):
   v=u[j]+(u[j-1] if j else 0.)
   for r in np.linspace(0,1,51)[:-1]:
-   xp=expm(A*r)@x+np.array([(1-np.cos(k*r))/k**2,np.sin(k*r)/k])*v;allrows.append([j+r,*xp,v])
+   xp=expm(A*r)@x+np.array([(1-np.cos(k*r))/k**2,np.sin(k*r)/k])*v
+   allrows.append([j+r,*xp,v])
   x=expm(A)@x+np.array([(1-np.cos(k))/k**2,np.sin(k)/k])*v
  allrows.append([8.,*x,u[-1]])
  return np.array(allrows),{'ranks':rows,'final_physical_state':x.tolist(),'interpretation':'Printed final condition excludes odd multiples only; sampled controllability actually requires sin(k*h) != 0.'}
 
 def plot_table(table,out,stem,cols,labels,ylabel):
- import matplotlib;matplotlib.use('Agg');import matplotlib.pyplot as plt
+ import matplotlib;matplotlib.use('Agg')
+ import matplotlib.pyplot as plt
  fig,ax=plt.subplots(figsize=(8,4.2))
  for j,l in zip(cols,labels):ax.plot(table[:,0],table[:,j],label=l,linewidth=1.2)
  ax.set(xlabel='Time',ylabel=ylabel,title=stem);ax.grid(alpha=.25);ax.legend();fig.tight_layout();fig.savefig(out/(stem+'.png'),dpi=160);plt.close(fig)
 
 def main(out):
- out=Path(out);out.mkdir(parents=True,exist_ok=True);results=[];cases=[]
+ out=Path(out);out.mkdir(parents=True,exist_ok=True);results=[]
+ cases=[]
  for k in [1.,2.]:
   for h in [.04,.02,.01]:cases.append((f'oscillator_k{k}_h{h}',oscillator,{'h':h,'kappa':k}))
  for name,func in [('population',population),('mixed',mixed),('time_varying',time_varying),('proportional',proportional),('closed_loop',closed_loop)]:
   for h in [.04,.02,.01]:cases.append((f'{name}_h{h}',func,{'h':h}))
- cases.append(('mixed_quadrature48',mixed,{'h':.01,'nq':48}));cases.append(('closed_loop_offgrid',closed_loop,{'h':.01,'delay':.613}))
+ cases.append(('mixed_quadrature48',mixed,{'h':.01,'nq':48}))
+ cases.append(('closed_loop_offgrid',closed_loop,{'h':.01,'delay':.613}))
  for h in [.01,.005,.0025]:cases.append((f'folded_h{h}',folded,{'h':h}))
  cases.append(('sampled_oscillator',sampled_oscillator,{}))
  for name,f,kw in cases:
   start=time.time()
   try:
-   table,m=f(**kw);np.savetxt(out/(name+'.csv'),table,delimiter=',');m.update(case=name,parameters=kw,status='completed',seconds=time.time()-start)
+   table,m=f(**kw);np.savetxt(out/(name+'.csv'),table,delimiter=',')
+   m.update(case=name,parameters=kw,status='completed',seconds=time.time()-start)
    if name=='oscillator_k2.0_h0.01':plot_table(table,out,name,[3,5,7],['Reconstructed y1','Derived reduction y1','Printed Eq. 2.3 y1'],'Reduced state')
    if name=='closed_loop_h0.01':plot_table(table,out,name,[1,3],['Physical x','Reconstructed y'],'State')
    if name=='population_h0.01':plot_table(table,out,name,[1,3],['Physical x','Reconstructed y'],'State')
@@ -168,7 +183,8 @@ def main(out):
    if name=='sampled_oscillator':plot_table(table,out,name,[1,2],['Physical x1','Physical x2'],'Physical state, k*h = 2*pi')
   except Exception as e:m={'case':name,'parameters':kw,'status':'error','error':repr(e)}
   results.append(m);print(json.dumps(m),flush=True)
- (out/'summary.json').write_text(json.dumps(results,indent=2));import scipy
+ (out/'summary.json').write_text(json.dumps(results,indent=2))
+ import scipy
  (out/'provenance.json').write_text(json.dumps({'utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),'python':platform.python_version(),'numpy':np.__version__,'scipy':scipy.__version__,'source_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'execution':'CPU Python; no MATLAB','execution_environment':('Google Colab' if 'COLAB_RELEASE_TAG' in os.environ else 'GitHub Actions' if os.environ.get('GITHUB_ACTIONS')=='true' else 'Other Python runtime'),'author_code':False},indent=2))
 if __name__=='__main__':
  ap=argparse.ArgumentParser();ap.add_argument('--out',default='results');main(ap.parse_args().out)
