@@ -1,0 +1,11 @@
+{
+  "utc": "2026-09-09T05:31:17Z",
+  "python": "3.13.5",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "numba": "0.65.1",
+  "source_sha256": "648f5cc5e3bbe1dc884b91e2d4309a32ebee68020d6106b5afc382c05c65a1b0",
+  "execution": "CPU Python; no MATLAB",
+  "execution_environment": "Other Python runtime",
+  "author_code": false
+}

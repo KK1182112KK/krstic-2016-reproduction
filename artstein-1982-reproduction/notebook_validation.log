@@ -1,0 +1,4 @@
+Working directory: /tmp/audit_notebook_check_j4qcjcf1/artstein_1982_audit
+................                                                         [100%]
+16 passed in 1.08s
+smoke: {'derived_error': 6.911349270666278e-10, 'printed_error': 0.03487615275964884, 'derived_Bhat': [-0.49272486499423007, 1.169967142900241], 'printed_Bhat': [-0.9854497299884601, 1.169967142900241]}

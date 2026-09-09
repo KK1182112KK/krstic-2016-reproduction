@@ -1,0 +1,30 @@
+[
+  {
+    "case": "predictor_h0.04",
+    "max_component_difference_to_finest": 0.007195181741389278
+  },
+  {
+    "case": "predictor_h0.02",
+    "max_component_difference_to_finest": 0.0033385053582731805
+  },
+  {
+    "case": "predictor_h0.01",
+    "max_component_difference_to_finest": 0.0014258256799201119
+  },
+  {
+    "case": "predictor_h0.005",
+    "max_component_difference_to_finest": 0.00047445274764007506
+  },
+  {
+    "case": "predictor_h0.0025",
+    "max_component_difference_to_finest": 0.0
+  },
+  {
+    "case": "spatial_refinement",
+    "max_component_difference_to_finest": 0.0014258256798180269
+  },
+  {
+    "case": "wrong_clock_diagnostic",
+    "max_component_difference_to_finest": 0.0015430737011355444
+  }
+]
