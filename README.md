@@ -15,11 +15,11 @@ The reports below are published on their repositories' **default branches**, not
 | Bekiaris-Liberis / Krstic 2017, multi-input nonlinear predictor | Unicycle **(82)–(84)**, controller/predictors **(89)–(98)**, Figs. 3–5 | [2017 report](bekiaris-liberis-krstic-2017-reproduction/REPORT.md) |
 | Zhao / Gao / Xu / Kao 2022, state-dependent two-input predictor | Predictors/clocks **(3)–(12)**, linear specialization **(24)–(31)**, traffic **(42)–(47)** | [Zhao report](zhao-2022-reproduction/REPORT.md) |
 | Ponomarev 2016, three examples | **(73)–(88)** and **(89)–(104)**, using explicitly identified arXiv-v1 numbering | [Ponomarev report](https://github.com/KK1182112KK/ponomarev-2016-reproduction/blob/master/docs/REPRODUCTION_REPORT.md) |
-| Fang / Zhang 2024, inexact predictor | Predictor **(2)–(3)**, plant/controller **(35)–(40)**, Figs. 1–8 scope | [Fang report](https://github.com/KK1182112KK/fang-2024-reproduction/blob/main/docs/REPRODUCTION_REPORT.md) |
+| Fang / Zhang 2024, inexact predictor | Predictor **(2)–(3)**, plant/controller **(35)–(40)**, published Figs. 1–8, local closed-loop spectrum | [Fang extended report](https://github.com/KK1182112KK/fang-2024-reproduction/blob/main/extended-audit-2026-09/REPORT.md) |
 
 The projects intentionally distinguish a source equation, an algebraic consequence, a numerical implementation and a published figure. A simulation that looks like a paper figure is not treated as a proof of a theorem, and a printed specialization discrepancy is not silently promoted to a refutation of an entire theory.
 
-The Ponomarev and Fang reporting audits retain their measured numerical cases and actual test evidence. They do **not** silently migrate those existing Euler/nearest-grid solvers to this repository's timestamp-based implementations. Method limitations and unverified stronger claims are documented individually.
+The Ponomarev baseline and the earlier Fang Euler/nearest-grid reporting audit retain their measured numerical cases and actual test evidence. They do **not** silently migrate those existing solvers to this repository's timestamp-based implementations. Fang additionally has a separate September 2026 extended audit with an independent continuous-feedback discretization, PDF-vector comparison, local characteristic-root check and small-initial-condition runs. Method limitations and theorem-scope boundaries are documented individually.
 
 ## This repository: physical equations and archived outcomes
 
@@ -33,6 +33,7 @@ Default paths integrate the **original physical delayed plant** whenever a physi
 | 2016 Example 1 | **(28)–(29), (32)–(34)**; reference **(30)–(31)** | D=1, h=0.005, T=20: physical norm **0.0728144524**; maximum componentwise Z/reference difference **0.00435302254**. |
 | 2017 unicycle predictor | **(82)–(84), (89)–(98)** | P2 identity residual refines from **5.4176e-3** at h=0.04 to **3.35125e-4** at h=0.0025; compensated implementation is numerically consistent. |
 | Zhao 2022 exact-trajectory diagnostic | Claimed identity after **(12)** | Literal printed second predictor differs from the exact implicit predictor by **1.08778e-5** at x0=0.2; clock-consistent alternative agrees to floating-point scale. |
+| Fang 2024 extended audit | **(2)–(3), (35)–(40), Figs. 1–6** | Printed initialization gives **U(0+)≈[-11.6011,-29.3577]** while Fig. 2 starts near **[-8.004,-20.010]**; a high-precision local root is **0.6821018133+53.1488659191i**. This concerns the selected example, not the abstract sufficiently-small-mismatch theorem. |
 | 2012 cooling Example 1 | **(63)–(66), Fig. 3** | dt=0.005, T=10, assumed T_eq=0.4: history 0.2 gives **(0.399743676, 0.399951478)**; alternative 0.6 gives **(0.400096789, 0.400016819)**. |
 
 Sources and full refinement rows are stored in each subproject's report and machine-readable results. They are our computations, not numbers transcribed from paper figures unless a comparison is explicitly labeled as a vector-curve extraction.
@@ -110,17 +111,19 @@ run_all('test')  % Discovered MATLAB unit tests
 | Artstein 1982 audit | **16 passed** | [test log](artstein-1982-reproduction/tests.log) |
 | Bekiaris-Liberis & Krstic 2017 audit | **17 passed** | [test log](bekiaris-liberis-krstic-2017-reproduction/tests.log) |
 | Zhao 2022 publication | Same **14-test** source suite re-executed locally before publication | [publication provenance](zhao-2022-reproduction/PUBLICATION.md) |
+| Artstein/BK2017/Zhao publication CI | **All 3 jobs succeeded** on merged master | [Run 34327413499](https://github.com/KK1182112KK/krstic-2016-reproduction/actions/runs/34327413499) |
+| Fang 2024 extended audit CI | **17-test suite and full sampled-data runner succeeded** on merged main | [Run 34328616186](https://github.com/KK1182112KK/fang-2024-reproduction/actions/runs/34328616186) |
 | Delayed-command recording at Eq. (29) switches | **27 mismatched nodes to 0**, t/X/U/Z bitwise unchanged in the recorded regression | [Regression JSON](results/verification-2026-09-07/boundary-regression.json) |
 | Python CI for prior parent snapshot | **3.10–3.13** jobs succeeded; notebook on 3.13 | [Run 34169034484](https://github.com/KK1182112KK/krstic-2016-reproduction/actions/runs/34169034484) |
 | MATLAB CI for prior parent snapshot | **R2026a Update 5**, seven discovered direct/boundary tests passed and `run_all('sim')` completed | [Run 34169034488](https://github.com/KK1182112KK/krstic-2016-reproduction/actions/runs/34169034488) |
 
-The older CI certificates apply to their recorded source snapshots, not automatically to later publication commits. The Artstein, 2017 and Zhao additions report local Python execution unless a later CI record explicitly says otherwise. Compact evidence remains committed even when raw trajectories are regenerated rather than stored.
+The older CI certificates apply to their recorded source snapshots, not automatically to later publication commits. The newer publication runs above are explicit fresh executions of their committed audit suites. Compact evidence remains committed even when raw trajectories are regenerated rather than stored.
 
 ## Interpretation and limits
 
 The projects do not use journal prestige as a correctness certificate. Conversely, a printed typo, a finite numerical discrepancy, or an assumption violation in a specific example is not automatically classified as fabrication or a false theorem. Each report states the narrowest finding supported by its algebraic and numerical evidence.
 
-The 2017 constant-delay multi-input predictor audit is an important counterexample to a blanket skeptical conclusion: **its implemented central predictor identities refine in the expected direction and the compensated published figures are closely reproduced.** The Zhao 2022 state-dependent extension has a different, explicitly documented second-predictor algebra issue. These projects are intentionally kept separate.
+The 2017 constant-delay multi-input predictor audit is an important counterexample to a blanket skeptical conclusion: **its implemented central predictor identities refine in the expected direction and the compensated published figures are closely reproduced.** The Zhao 2022 state-dependent extension has a different, explicitly documented second-predictor algebra issue. Fang 2024's extended audit again concerns the paper's selected parameter example and explicitly preserves the theorem's sufficiently-small-mismatch scope. These projects are intentionally kept separate.
 
 Old transport-PDE functions remain opt-in comparisons (`run_all('legacy-pde')`, `run_pde_simulation`). They propagated a physical plant with an approximate delay, not just an autonomous target, and are not the current default.
 
@@ -128,4 +131,4 @@ Old transport-PDE functions remain opt-in comparisons (`run_all('legacy-pde')`, 
 
 ## Publication and license
 
-The audit subprojects are available from `master`; source papers and author-generated figures are not redistributed. Implementation code uses the existing [MIT license](LICENSE). Generated reports, executable reproduction code, machine-readable compact evidence, and local-execution provenance are published separately from the original papers.
+The audit subprojects are available from their default branches; source papers and author-generated figures are not redistributed. Implementation code uses the existing [MIT license](LICENSE). Generated reports, executable reproduction code, machine-readable compact evidence, and local/CI execution provenance are published separately from the original papers.
